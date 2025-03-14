@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -25,6 +27,8 @@ const formSchema = z.object({
 })
 
 export default function AddProductPage() {
+  const [mounted, setMounted] = useState(false)
+  const isLoggedIn = useIsLoggedIn()
   const router = useRouter()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,6 +44,26 @@ export default function AddProductPage() {
       image: "",
     },
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="container flex flex-col items-center justify-center px-4 py-16">
+        <h1 className="text-2xl font-bold mb-4">Please Login to Add Products</h1>
+        <p className="text-muted-foreground mb-6">You need to be logged in to add new products</p>
+        <Link href="/login">
+          <Button>Login</Button>
+        </Link>
+      </div>
+    )
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)

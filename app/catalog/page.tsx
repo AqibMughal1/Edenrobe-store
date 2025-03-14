@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { Filter, SlidersHorizontal } from "lucide-react"
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -21,6 +22,8 @@ export default function CatalogPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { addToCart } = useCart()
+  const [mounted, setMounted] = useState(false)
+  const isLoggedIn = useIsLoggedIn()
 
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
@@ -32,6 +35,10 @@ export default function CatalogPage() {
     minPrice: 0,
     maxPrice: 200,
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -133,6 +140,22 @@ export default function CatalogPage() {
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
     })
+  }
+
+  if (!mounted) {
+    return null
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="container flex flex-col items-center justify-center px-4 py-16">
+        <h1 className="text-2xl font-bold mb-4">Please Login to View Catalog</h1>
+        <p className="text-muted-foreground mb-6">You need to be logged in to browse products</p>
+        <Link href="/login">
+          <Button>Login</Button>
+        </Link>
+      </div>
+    )
   }
 
   return (

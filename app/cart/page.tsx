@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react"
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -16,10 +17,27 @@ export default function CartPage() {
   const { toast } = useToast()
   const { items, updateQuantity, removeFromCart, clearCart } = useCart()
   const [mounted, setMounted] = useState(false)
+  const isLoggedIn = useIsLoggedIn()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  if (!mounted) {
+    return null
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="container flex flex-col items-center justify-center px-4 py-16">
+        <h1 className="text-2xl font-bold mb-4">Please Login to View Cart</h1>
+        <p className="text-muted-foreground mb-6">You need to be logged in to access your shopping cart</p>
+        <Link href="/login">
+          <Button>Login</Button>
+        </Link>
+      </div>
+    )
+  }
 
   const handleUpdateQuantity = (id, quantity) => {
     updateQuantity(id, quantity)
@@ -41,10 +59,6 @@ export default function CartPage() {
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
   const shipping = subtotal > 0 ? 10 : 0
   const total = subtotal + shipping
-
-  if (!mounted) {
-    return null
-  }
 
   return (
     <div className="container px-4 py-8 md:px-6 md:py-12">
