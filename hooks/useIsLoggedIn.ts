@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 export function useIsLoggedIn() {
@@ -10,5 +9,15 @@ export function useIsLoggedIn() {
     setIsLoggedIn(!!token);
   }, []);
 
-  return isLoggedIn;
+  const login = (token: string) => {
+    localStorage.setItem('token', token);
+    setIsLoggedIn(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
+  return { isLoggedIn, login, logout };
 }

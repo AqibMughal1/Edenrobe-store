@@ -8,11 +8,13 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useCart } from "@/lib/cart-context"
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn"
 
 export default function Header() {
   const pathname = usePathname()
   const { items } = useCart()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { isLoggedIn, logout } = useIsLoggedIn()
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -46,14 +48,24 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm">Register</Button>
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Button variant="ghost" size="sm" onClick={logout}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">Register</Button>
+                </Link>
+              </>
+            )}
           </div>
           <Link href="/cart" className="relative">
             <Button variant="ghost" size="icon">
@@ -88,18 +100,27 @@ export default function Header() {
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-2 border-t">
-              <Link href="/login" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
+              {isLoggedIn ? (
+                <Button variant="ghost" className="w-full justify-start" onClick={logout}>
                   <User className="mr-2 h-4 w-4" />
-                  Login
+                  Logout
                 </Button>
-              </Link>
-              <Link href="/register" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full justify-start">
-                  <User className="mr-2 h-4 w-4" />
-                  Register
-                </Button>
-              </Link>
+              ) : (
+                <>
+                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <User className="mr-2 h-4 w-4" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full justify-start">
+                      <User className="mr-2 h-4 w-4" />
+                      Register
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
