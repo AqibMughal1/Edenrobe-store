@@ -17,8 +17,6 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    // In a real app, you would validate credentials with your backend
-    // This is just a mock implementation
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
